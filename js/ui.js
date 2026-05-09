@@ -1,4 +1,4 @@
-// ── Screen nav ────────────────────────────────────────────────────────────────
+// ── Screen nav ────────────────────────────────────────────────────────────
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -7,7 +7,7 @@ function showTutorial(){
   tutCurrentSlide=0;buildTutDots();goToSlide(0);showScreen('s-tutorial');
 }
 
-// ── Lobby ─────────────────────────────────────────────────────────────────────
+// ── Lobby ────────────────────────────────────────────────────────────
 function showPanel(id){
   document.querySelectorAll('.sub-panel').forEach(p=>p.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
@@ -29,7 +29,7 @@ function shareCode(){
   else{navigator.clipboard.writeText(code);document.getElementById('btn-share-code').textContent='✓ Gekopieerd!';}
 }
 
-// ── Tutorial nav ──────────────────────────────────────────────────────────────
+// ── Tutorial nav ───────────────────────────────────────────────────────────
 let tutCurrentSlide=0;
 const SLIDE_COUNT=6;
 function buildTutDots(){
@@ -58,7 +58,7 @@ function tutNav(dir){
   goToSlide(next);
 }
 
-// ── Start roll ────────────────────────────────────────────────────────────────
+// ── Start roll ───────────────────────────────────────────────────────────
 function showStartRoll(){
   G.startRolls={w:null,r:null};
   drawBlankDie(document.getElementById('sr-cv-white'),'w');
@@ -124,7 +124,7 @@ function startMainGame(){
   else{enableRoll();}
 }
 
-// ── Roll (human) ──────────────────────────────────────────────────────────────
+// ── Roll (human) ──────────────────────────────────────────────────────────
 function rollDice(){
   if(G.mode==='online'&&G.turn!==G.myColor)return;
   const d1=rollRandom(),d2=rollRandom();
@@ -134,14 +134,17 @@ function rollDice(){
   const isTT=Math.min(d1,d2)===1&&Math.max(d1,d2)===2,isDbl=d1===d2;
   setDiceNote(d1,d2,isTT,isDbl);
   setMsg(`${colorName(G.turn)} aan zet.`);
-  animateDice(()=>{renderDice();});
+  animateDice(()=>{
+    renderDice();
+    renderBoard();
+    updateSidebars();
+    if(!checkCanMove())return;
+  });
   if(G.mode==='online')pushState({});
-  renderBoard();updateSidebars();
-  if(!checkCanMove())return;
 }
 function passTurn(){G.selected=null;endTurnLogic();if(G.mode==='online')pushState({passed:true});}
 
-// ── Click handling ────────────────────────────────────────────────────────────
+// ── Click handling ──────────────────────────────────────────────────────────
 function ptClick(idx){
   if(G.mode==='online'&&G.turn!==G.myColor)return;
   if(G.mode==='ai'&&G.turn==='r')return;
@@ -192,7 +195,7 @@ function afterMove(){
   checkCanMove();
 }
 
-// ── Winner ────────────────────────────────────────────────────────────────────
+// ── Winner ────────────────────────────────────────────────────────────
 function showWinner(c){
   const isMe=G.mode==='online'&&c===G.myColor;
   const lbl=G.mode==='ai'&&c==='r'?'AI Wint! 🤖':
@@ -203,10 +206,10 @@ function showWinner(c){
   showAiThinking(false);
 }
 
-// ── Render all ────────────────────────────────────────────────────────────────
+// ── Render all ──────────────────────────────────────────────────────────
 function renderAll(){renderBoard();renderDice();updateSidebars();}
 
-// ── Point labels ──────────────────────────────────────────────────────────────
+// ── Point labels ──────────────────────────────────────────────────────────
 function buildPointLabels(){
   // Top row shows points 24..13 (indices 23..12) left to right
   // Bot row shows points 1..12  (indices 0..11)  left to right
@@ -227,7 +230,7 @@ function buildPointLabels(){
   }
 }
 
-// ── Board render ──────────────────────────────────────────────────────────────
+// ── Board render ─────────────────────────────────────────────────────────
 function renderBoard(){
   const tRow=document.getElementById('brow-top');
   const bRow=document.getElementById('brow-bot');
@@ -305,7 +308,7 @@ function makePieceEl(c,clickable){
   return p;
 }
 
-// ── Render sidebars ───────────────────────────────────────────────────────────
+// ── Render sidebars ────────────────────────────────────────────────────────
 function updateSidebars(){
   // Turn dots
   document.getElementById('dot-white').classList.toggle('active',G.turn==='w');
@@ -345,7 +348,7 @@ function setDiceNote(d1,d2,isTT,isDbl){
   document.getElementById('dice-note').textContent=n;
 }
 
-// ── SVG Dice rendering ────────────────────────────────────────────────────────
+// ── SVG Dice rendering ───────────────────────────────────────────────────────
 const DOTS={
   1:[[50,50]],
   2:[[25,25],[75,75]],
