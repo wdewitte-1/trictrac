@@ -1,2 +1,1 @@
-// This file is loaded before multiplayer.js
-// Your Firebase config is defined in multiplayer.js — replace the placeholder values there.
+// Firebase is initialized inside multiplayer.js — no extra config needed here.

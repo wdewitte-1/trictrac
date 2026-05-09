@@ -1,176 +1,448 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#1a3a0a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="TricTrac">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>TricTrac</title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="theme-color" content="#1a0800">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TricTrac">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>TricTrac</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<!-- LOBBY -->
-<div id="screen-lobby" class="screen active">
-  <div class="lobby-inner">
-    <div class="logo">
-      <div class="logo-icon">♟</div>
-      <h1>TricTrac</h1>
-      <p class="tagline">De Nederlandse variant van Backgammon</p>
-    </div>
-    <div class="mode-grid">
-      <button class="mode-btn" onclick="startLocal()">
-        <span class="mode-icon">♙</span>
-        <span class="mode-title">2 spelers</span>
-        <span class="mode-sub">Op dit apparaat</span>
-      </button>
-      <button class="mode-btn" onclick="showAiSetup()">
-        <span class="mode-icon">♚</span>
-        <span class="mode-title">Tegen AI</span>
-        <span class="mode-sub">Speel alleen</span>
-      </button>
-      <button class="mode-btn" onclick="showCreateRoom()">
-        <span class="mode-icon">✉</span>
-        <span class="mode-title">Spel aanmaken</span>
-        <span class="mode-sub">Online multiplayer</span>
-      </button>
-      <button class="mode-btn" onclick="showJoinRoom()">
-        <span class="mode-icon">🔗</span>
-        <span class="mode-title">Spel joinen</span>
-        <span class="mode-sub">Voer code in</span>
-      </button>
-    </div>
-    <div id="ai-setup" class="panel hidden">
-      <p class="panel-label">Moeilijkheidsgraad</p>
-      <div class="diff-row">
-        <button class="diff-btn active" data-diff="easy"   onclick="setDiff(this)">Makkelijk</button>
-        <button class="diff-btn"        data-diff="medium" onclick="setDiff(this)">Gemiddeld</button>
-        <button class="diff-btn"        data-diff="hard"   onclick="setDiff(this)">Moeilijk</button>
+<!-- ══════════ LOBBY ══════════ -->
+<div id="s-lobby" class="screen active">
+  <div class="lobby-bg"></div>
+  <div class="lobby-wrap">
+    <div class="lobby-left">
+      <div class="lobby-logo">
+        <div class="lobby-dice">🎲</div>
+        <h1>TricTrac</h1>
+        <p>De Nederlandse Backgammon</p>
       </div>
-      <button class="primary-btn" onclick="startAi()">Spelen</button>
+      <button class="lobby-howto-btn" onclick="showTutorial()">📖 Hoe speel je?</button>
     </div>
-    <div id="create-room" class="panel hidden">
-      <p class="panel-label">Jouw spelcode</p>
-      <div class="room-code-display" id="room-code-display">—</div>
-      <p class="panel-sub" id="create-status">Code wordt aangemaakt…</p>
-      <button class="primary-btn" id="btn-share-code" onclick="shareCode()" style="display:none">Deel code</button>
-      <p class="panel-sub waiting-text" id="waiting-text" style="display:none">Wachten op tweede speler…</p>
+    <div class="lobby-right">
+      <button class="mode-card mc-local"  onclick="startLocal()">
+        <span class="mc-ico">👥</span><span class="mc-lbl">2 Spelers<small>Lokaal</small></span>
+      </button>
+      <button class="mode-card mc-ai"     onclick="showPanel('ai-panel')">
+        <span class="mc-ico">🤖</span><span class="mc-lbl">Vs AI<small>Solo</small></span>
+      </button>
+      <button class="mode-card mc-create" onclick="showPanel('create-panel')">
+        <span class="mc-ico">🌐</span><span class="mc-lbl">Aanmaken<small>Online</small></span>
+      </button>
+      <button class="mode-card mc-join"   onclick="showPanel('join-panel')">
+        <span class="mc-ico">🔗</span><span class="mc-lbl">Joinen<small>Code</small></span>
+      </button>
     </div>
-    <div id="join-room" class="panel hidden">
-      <p class="panel-label">Voer spelcode in</p>
-      <input type="text" id="join-input" maxlength="6" placeholder="bv. AB12CD" autocomplete="off" autocapitalize="characters">
-      <button class="primary-btn" onclick="joinRoom()">Joinen</button>
-      <p class="panel-sub error-text" id="join-error"></p>
+  </div>
+
+  <!-- sub panels -->
+  <div class="sub-panel hidden" id="ai-panel">
+    <button class="sp-close" onclick="hidePanel()">✕</button>
+    <div class="sp-title">Moeilijkheidsgraad</div>
+    <div class="diff-row">
+      <button class="diff-btn active" data-diff="easy"   onclick="setDiff(this)">😊 Makkelijk</button>
+      <button class="diff-btn"        data-diff="medium" onclick="setDiff(this)">😐 Gemiddeld</button>
+      <button class="diff-btn"        data-diff="hard"   onclick="setDiff(this)">😤 Moeilijk</button>
     </div>
+    <button class="sp-go" onclick="startAi()">Spelen →</button>
+  </div>
+
+  <div class="sub-panel hidden" id="create-panel">
+    <button class="sp-close" onclick="hidePanel()">✕</button>
+    <div class="sp-title">Jouw Spelcode</div>
+    <div class="code-box" id="room-code-display">——</div>
+    <div class="sp-sub" id="create-status">Aanmaken…</div>
+    <button class="sp-go" id="btn-share-code" onclick="shareCode()" style="display:none">📤 Deel Code</button>
+    <div class="sp-waiting" id="waiting-text" style="display:none">⏳ Wachten op speler 2…</div>
+  </div>
+
+  <div class="sub-panel hidden" id="join-panel">
+    <button class="sp-close" onclick="hidePanel()">✕</button>
+    <div class="sp-title">Voer Code In</div>
+    <input id="join-input" type="text" maxlength="6" placeholder="AB12CD" autocapitalize="characters">
+    <button class="sp-go" onclick="joinRoom()">Joinen →</button>
+    <div class="sp-error" id="join-error"></div>
   </div>
 </div>
 
-<!-- STARTING ROLL -->
-<div id="screen-startroll" class="screen">
-  <div class="startroll-inner">
-    <h2>Wie begint?</h2>
-    <p class="sr-sub">Beide spelers gooien één dobbelsteen.<br>De hoogste gooi mag beginnen.</p>
-    <div class="start-players">
-      <div class="start-player" id="sp-white">
-        <div class="sp-label">Speler 1 · Wit</div>
-        <svg class="sp-die-svg die-white" id="sp-die-white" viewBox="0 0 60 60">
-          <rect x="3" y="3" width="54" height="54" rx="10" fill="#f5f5f5" stroke="#bbb" stroke-width="2"/>
-          <text id="sp-val-white" x="30" y="40" text-anchor="middle" font-size="30" font-weight="800" font-family="-apple-system,sans-serif" fill="#1a1a1a">?</text>
-        </svg>
-        <button class="roll-btn roll-btn-white" id="btn-roll-white" onclick="doStartRoll('white')">Gooi</button>
+<!-- ══════════ TUTORIAL ══════════ -->
+<div id="s-tutorial" class="screen">
+  <div class="tut-bg"></div>
+  <div class="tut-wrap">
+    <button class="tut-close" onclick="showScreen('s-lobby')">✕ Sluiten</button>
+    <h2 class="tut-main-title">🎲 Hoe speel je TricTrac?</h2>
+
+    <div class="tut-slides" id="tut-slides">
+
+      <!-- slide 1 -->
+      <div class="tut-slide active" data-slide="0">
+        <div class="tut-slide-inner">
+          <div class="tut-graphic">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="180" rx="12" fill="#2d1a00"/>
+              <rect x="10" y="10" width="300" height="160" rx="8" fill="#3d2200"/>
+              <!-- triangles top -->
+              <polygon points="20,10 40,10 30,80"  fill="#8B1A1A"/>
+              <polygon points="45,10 65,10 55,80"  fill="#D4B483"/>
+              <polygon points="70,10 90,10 80,80"  fill="#8B1A1A"/>
+              <polygon points="95,10 115,10 105,80" fill="#D4B483"/>
+              <polygon points="120,10 140,10 130,80" fill="#8B1A1A"/>
+              <polygon points="145,10 165,10 155,80" fill="#D4B483"/>
+              <polygon points="175,10 195,10 185,80" fill="#8B1A1A"/>
+              <polygon points="200,10 220,10 210,80" fill="#D4B483"/>
+              <polygon points="225,10 245,10 235,80" fill="#8B1A1A"/>
+              <polygon points="250,10 270,10 260,80" fill="#D4B483"/>
+              <polygon points="275,10 295,10 285,80" fill="#8B1A1A"/>
+              <!-- triangles bot -->
+              <polygon points="20,170 40,170 30,100"  fill="#D4B483"/>
+              <polygon points="45,170 65,170 55,100"  fill="#8B1A1A"/>
+              <polygon points="70,170 90,170 80,100"  fill="#D4B483"/>
+              <polygon points="95,170 115,170 105,100" fill="#8B1A1A"/>
+              <polygon points="120,170 140,170 130,100" fill="#D4B483"/>
+              <polygon points="145,170 165,170 155,100" fill="#8B1A1A"/>
+              <polygon points="175,170 195,170 185,100" fill="#D4B483"/>
+              <polygon points="200,170 220,170 210,100" fill="#8B1A1A"/>
+              <polygon points="225,170 245,170 235,100" fill="#D4B483"/>
+              <polygon points="250,170 270,170 260,100" fill="#8B1A1A"/>
+              <polygon points="275,170 295,170 285,100" fill="#D4B483"/>
+              <!-- bar -->
+              <rect x="160" y="10" width="12" height="160" fill="#1a0800"/>
+              <!-- pieces -->
+              <circle cx="30"  cy="95" r="10" fill="#e0e0e0" stroke="#aaa" stroke-width="1.5"/>
+              <circle cx="55"  cy="95" r="10" fill="#e0e0e0" stroke="#aaa" stroke-width="1.5"/>
+              <circle cx="285" cy="85" r="10" fill="#c0392b" stroke="#e74c3c" stroke-width="1.5"/>
+              <circle cx="285" cy="107" r="10" fill="#c0392b" stroke="#e74c3c" stroke-width="1.5"/>
+              <text x="160" y="96" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.5)" font-family="sans-serif">BAR</text>
+            </svg>
+          </div>
+          <div class="tut-text">
+            <h3>Het Bord</h3>
+            <p>TricTrac wordt gespeeld op een bord met <strong>24 driehoeken</strong> (punten), verdeeld in 4 kwadranten van elk 6 punten. Het bord heeft een middenbalk die de twee helften scheidt.</p>
+            <p>Elke speler heeft <strong>15 stenen</strong>. Wit speelt van links naar rechts, Rood van rechts naar links.</p>
+          </div>
+        </div>
       </div>
-      <div class="start-vs">vs</div>
-      <div class="start-player" id="sp-black">
-        <div class="sp-label">Speler 2 · Rood</div>
-        <svg class="sp-die-svg die-red" id="sp-die-black" viewBox="0 0 60 60">
-          <rect x="3" y="3" width="54" height="54" rx="10" fill="#7a0a0a" stroke="#c0392b" stroke-width="2"/>
-          <text id="sp-val-black" x="30" y="40" text-anchor="middle" font-size="30" font-weight="800" font-family="-apple-system,sans-serif" fill="#fff">?</text>
-        </svg>
-        <button class="roll-btn roll-btn-red" id="btn-roll-black" onclick="doStartRoll('black')">Gooi</button>
+
+      <!-- slide 2 -->
+      <div class="tut-slide" data-slide="1">
+        <div class="tut-slide-inner">
+          <div class="tut-graphic">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="180" rx="12" fill="#1a0800"/>
+              <!-- Phase labels -->
+              <rect x="10" y="20" width="90" height="140" rx="8" fill="#2d1a00"/>
+              <rect x="115" y="20" width="90" height="140" rx="8" fill="#2d1a00"/>
+              <rect x="220" y="20" width="90" height="140" rx="8" fill="#2d1a00"/>
+              <text x="55"  y="48" text-anchor="middle" font-size="11" fill="#FFD700" font-family="sans-serif" font-weight="bold">FASE 1</text>
+              <text x="160" y="48" text-anchor="middle" font-size="11" fill="#FFD700" font-family="sans-serif" font-weight="bold">FASE 2</text>
+              <text x="265" y="48" text-anchor="middle" font-size="11" fill="#FFD700" font-family="sans-serif" font-weight="bold">FASE 3</text>
+              <text x="55"  y="65" text-anchor="middle" font-size="10" fill="#e0e0e0" font-family="sans-serif">Inzetten</text>
+              <text x="160" y="65" text-anchor="middle" font-size="10" fill="#e0e0e0" font-family="sans-serif">Doorlopen</text>
+              <text x="265" y="65" text-anchor="middle" font-size="10" fill="#e0e0e0" font-family="sans-serif">Uithalen</text>
+              <!-- icons -->
+              <text x="55"  y="120" text-anchor="middle" font-size="36" font-family="sans-serif">⬇️</text>
+              <text x="160" y="120" text-anchor="middle" font-size="36" font-family="sans-serif">➡️</text>
+              <text x="265" y="120" text-anchor="middle" font-size="36" font-family="sans-serif">✅</text>
+              <text x="55"  y="148" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.5)" font-family="sans-serif">Stenen plaatsen</text>
+              <text x="160" y="148" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.5)" font-family="sans-serif">Over het bord</text>
+              <text x="265" y="148" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.5)" font-family="sans-serif">Stenen verwijderen</text>
+            </svg>
+          </div>
+          <div class="tut-text">
+            <h3>De 3 Fases</h3>
+            <p><strong>Fase 1 – Inzetten:</strong> Al je stenen staan nog buiten het bord. Je zet ze één voor één in via vak 1 (jouw startkwadrant). Alle 15 stenen moeten eerst inzetten voordat je mag doorlopen.</p>
+            <p><strong>Fase 2 – Doorlopen:</strong> Beweeg je stenen over het bord richting jouw thuiskwadrant (vak 4).</p>
+            <p><strong>Fase 3 – Uithalen:</strong> Zodra alle stenen in jouw thuiskwadrant staan, haal je ze één voor één van het bord. Wie dit als eerste doet, wint!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- slide 3 -->
+      <div class="tut-slide" data-slide="2">
+        <div class="tut-slide-inner">
+          <div class="tut-graphic">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="180" rx="12" fill="#1a0800"/>
+              <!-- white die -->
+              <rect x="30" y="40" width="80" height="80" rx="14" fill="#f0f0f0" stroke="#ccc" stroke-width="2"/>
+              <circle cx="55" cy="65" r="8" fill="#1a1a1a"/>
+              <circle cx="90" cy="65" r="8" fill="#1a1a1a"/>
+              <circle cx="55" cy="100" r="8" fill="#1a1a1a"/>
+              <circle cx="90" cy="100" r="8" fill="#1a1a1a"/>
+              <text x="70" y="135" text-anchor="middle" font-size="11" fill="#e0e0e0" font-family="sans-serif">Speler 1 (Wit)</text>
+              <!-- red die -->
+              <rect x="130" y="40" width="80" height="80" rx="14" fill="#8B1A1A" stroke="#c0392b" stroke-width="2"/>
+              <circle cx="155" cy="65" r="8" fill="#fff"/>
+              <circle cx="190" cy="65" r="8" fill="#fff"/>
+              <circle cx="155" cy="100" r="8" fill="#fff"/>
+              <circle cx="190" cy="100" r="8" fill="#fff"/>
+              <circle cx="172" cy="80" r="8" fill="#fff"/>
+              <text x="170" y="135" text-anchor="middle" font-size="11" fill="#e0e0e0" font-family="sans-serif">Speler 2 (Rood)</text>
+              <!-- arrow + note -->
+              <text x="260" y="75" text-anchor="middle" font-size="30" font-family="sans-serif">⬅️</text>
+              <text x="260" y="105" text-anchor="middle" font-size="10" fill="#FFD700" font-family="sans-serif">Laagste</text>
+              <text x="260" y="120" text-anchor="middle" font-size="10" fill="#FFD700" font-family="sans-serif">eerst!</text>
+            </svg>
+          </div>
+          <div class="tut-text">
+            <h3>De Dobbelstenen</h3>
+            <p>Elke beurt gooi je <strong>2 dobbelstenen</strong>. Je speelt altijd het <strong>laagste getal eerst</strong>, dan het hogere.</p>
+            <p>Speler 1 heeft <strong>witte dobbelstenen</strong>, Speler 2 heeft <strong>rode dobbelstenen</strong>.</p>
+            <p>Je mag met één steen beide getallen spelen, of met twee verschillende stenen elk één getal.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- slide 4 -->
+      <div class="tut-slide" data-slide="3">
+        <div class="tut-slide-inner">
+          <div class="tut-graphic">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="180" rx="12" fill="#1a0800"/>
+              <!-- Dubbel section -->
+              <rect x="10" y="15" width="145" height="150" rx="8" fill="#2d1a00"/>
+              <text x="82" y="40" text-anchor="middle" font-size="11" fill="#FFD700" font-family="sans-serif" font-weight="bold">DUBBEL</text>
+              <rect x="22" y="50" width="45" height="45" rx="8" fill="#f0f0f0"/>
+              <circle cx="37" cy="65" r="6" fill="#1a1a1a"/>
+              <circle cx="55" cy="65" r="6" fill="#1a1a1a"/>
+              <circle cx="37" cy="83" r="6" fill="#1a1a1a"/>
+              <circle cx="55" cy="83" r="6" fill="#1a1a1a"/>
+              <rect x="75" y="50" width="45" height="45" rx="8" fill="#f0f0f0"/>
+              <circle cx="90" cy="65" r="6" fill="#1a1a1a"/>
+              <circle cx="108" cy="65" r="6" fill="#1a1a1a"/>
+              <circle cx="90" cy="83" r="6" fill="#1a1a1a"/>
+              <circle cx="108" cy="83" r="6" fill="#1a1a1a"/>
+              <text x="82" y="115" text-anchor="middle" font-size="10" fill="#e0e0e0" font-family="sans-serif">4×4 én 4×3 zetten</text>
+              <text x="82" y="130" text-anchor="middle" font-size="10" fill="#e0e0e0" font-family="sans-serif">+ opnieuw gooien!</text>
+              <!-- TricTrac section -->
+              <rect x="165" y="15" width="145" height="150" rx="8" fill="#2d1400"/>
+              <text x="237" y="40" text-anchor="middle" font-size="11" fill="#FF6B35" font-family="sans-serif" font-weight="bold">TRICTRAC!</text>
+              <rect x="177" y="50" width="45" height="45" rx="8" fill="#f0f0f0"/>
+              <circle cx="200" cy="72" r="6" fill="#1a1a1a"/>
+              <rect x="230" y="50" width="45" height="45" rx="8" fill="#8B1A1A" stroke="#c0392b" stroke-width="1.5"/>
+              <circle cx="244" cy="65" r="5" fill="#fff"/>
+              <circle cx="262" cy="83" r="5" fill="#fff"/>
+              <text x="237" y="115" text-anchor="middle" font-size="9.5" fill="#e0e0e0" font-family="sans-serif">1+2 = speciaal!</text>
+              <text x="237" y="130" text-anchor="middle" font-size="9" fill="#FF6B35" font-family="sans-serif">2×1, 2×2, 2×5, 2×6</text>
+              <text x="237" y="147" text-anchor="middle" font-size="9" fill="#e0e0e0" font-family="sans-serif">+ opnieuw gooien!</text>
+            </svg>
+          </div>
+          <div class="tut-text">
+            <h3>Dubbel & TricTrac</h3>
+            <p><strong>Dubbel gooien:</strong> Bij een dubbele worp mag je ook de onderkant van de dobbelsteen spelen. Je krijgt dus 4 zetten in plaats van 2. Daarna mag je opnieuw gooien!</p>
+            <p><strong>TricTrac (1+2):</strong> De speciale worp! Je speelt: 2×1, 2×2, 2×5 én 2×6 — 8 zetten in totaal. Ook daarna opnieuw gooien!</p>
+            <p>Zolang je alle zetten kunt uitvoeren, mag je blijven gooien.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- slide 5 -->
+      <div class="tut-slide" data-slide="4">
+        <div class="tut-slide-inner">
+          <div class="tut-graphic">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="180" rx="12" fill="#1a0800"/>
+              <!-- Slaan -->
+              <rect x="10" y="15" width="140" height="150" rx="8" fill="#2d1a00"/>
+              <text x="80" y="40" text-anchor="middle" font-size="11" fill="#FFD700" font-family="sans-serif" font-weight="bold">SLAAN</text>
+              <!-- triangle -->
+              <polygon points="45,55 95,55 70,120" fill="#8B1A1A"/>
+              <!-- lone piece -->
+              <circle cx="70" cy="65" r="12" fill="#c0392b" stroke="#e74c3c" stroke-width="2"/>
+              <!-- white attacker -->
+              <circle cx="30" cy="90" r="12" fill="#e0e0e0" stroke="#aaa" stroke-width="2"/>
+              <text x="80" y="148" text-anchor="middle" font-size="9" fill="#e0e0e0" font-family="sans-serif">1 steen = kwetsbaar!</text>
+              <text x="80" y="162" text-anchor="middle" font-size="9" fill="#FF6B35" font-family="sans-serif">→ naar de balk!</text>
+              <!-- Blokkeren -->
+              <rect x="165" y="15" width="140" height="150" rx="8" fill="#2d1a00"/>
+              <text x="235" y="40" text-anchor="middle" font-size="11" fill="#FFD700" font-family="sans-serif" font-weight="bold">BLOKKEREN</text>
+              <polygon points="200,55 250,55 225,120" fill="#D4B483"/>
+              <circle cx="215" cy="62" r="10" fill="#c0392b" stroke="#e74c3c" stroke-width="1.5"/>
+              <circle cx="235" cy="62" r="10" fill="#c0392b" stroke="#e74c3c" stroke-width="1.5"/>
+              <text x="235" y="140" text-anchor="middle" font-size="9" fill="#e0e0e0" font-family="sans-serif">2+ stenen = veilig!</text>
+              <text x="235" y="155" text-anchor="middle" font-size="9" fill="#4CAF50" font-family="sans-serif">Kan niet geslagen worden</text>
+            </svg>
+          </div>
+          <div class="tut-text">
+            <h3>Slaan & Blokkeren</h3>
+            <p><strong>Slaan:</strong> Staat er maar <strong>1 steen</strong> van je tegenstander op een punt? Dan kun je die steen slaan! Ze gaat naar de middenbalk en moet opnieuw worden ingezet.</p>
+            <p><strong>Blokkeren:</strong> Staan er <strong>2 of meer stenen</strong> op een punt? Dan is dat punt geblokkeerd — de tegenstander kan er niet op landen.</p>
+            <p>Op één punt mogen maximaal <strong>5 stenen</strong> staan.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- slide 6 -->
+      <div class="tut-slide" data-slide="5">
+        <div class="tut-slide-inner">
+          <div class="tut-graphic">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="180" rx="12" fill="#1a0800"/>
+              <text x="160" y="35" text-anchor="middle" font-size="13" fill="#FFD700" font-family="sans-serif" font-weight="bold">WIE BEGINT?</text>
+              <!-- white die -->
+              <rect x="50" y="55" width="70" height="70" rx="12" fill="#f0f0f0" stroke="#ccc" stroke-width="2"/>
+              <circle cx="80" cy="90" r="9" fill="#1a1a1a"/>
+              <text x="85" y="145" text-anchor="middle" font-size="11" fill="#e0e0e0" font-family="sans-serif">Wit: 1</text>
+              <!-- red die -->
+              <rect x="200" y="55" width="70" height="70" rx="12" fill="#8B1A1A" stroke="#c0392b" stroke-width="2"/>
+              <circle cx="222" cy="68" r="7" fill="#fff"/>
+              <circle cx="248" cy="68" r="7" fill="#fff"/>
+              <circle cx="222" cy="105" r="7" fill="#fff"/>
+              <circle cx="248" cy="105" r="7" fill="#fff"/>
+              <text x="235" y="145" text-anchor="middle" font-size="11" fill="#e0e0e0" font-family="sans-serif">Rood: 4</text>
+              <!-- trophy -->
+              <text x="160" y="105" text-anchor="middle" font-size="28" font-family="sans-serif">🏆</text>
+              <text x="160" y="145" text-anchor="middle" font-size="11" fill="#FF6B35" font-family="sans-serif">Rood begint!</text>
+            </svg>
+          </div>
+          <div class="tut-text">
+            <h3>Begin van het Spel</h3>
+            <p>Voor het spel begint, gooit <strong>elke speler één dobbelsteen</strong>. De speler met de <strong>hoogste worp</strong> mag beginnen.</p>
+            <p>Bij gelijkspel gooien beide spelers opnieuw totdat er een winnaar is.</p>
+            <p>Het bord begint <strong>leeg</strong> — dit is het grote verschil met gewone Backgammon. Fase 1 is dan ook het inzetten van al je stenen.</p>
+            <p>Veel plezier en goede strategie! 🎲</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tut-slides -->
+
+    <!-- Nav -->
+    <div class="tut-nav">
+      <button class="tut-prev" id="tut-prev" onclick="tutNav(-1)" disabled>‹</button>
+      <div class="tut-dots" id="tut-dots"></div>
+      <button class="tut-next" id="tut-next" onclick="tutNav(1)">›</button>
+    </div>
+    <button class="tut-play-btn" id="tut-play-btn" onclick="showScreen('s-lobby')" style="display:none">🎲 Spelen!</button>
+  </div>
+</div>
+
+<!-- ══════════ START ROLL ══════════ -->
+<div id="s-startroll" class="screen">
+  <div class="sr-bg"></div>
+  <div class="sr-wrap">
+    <h2>Wie Begint?</h2>
+    <p class="sr-sub">Hoogste worp mag beginnen</p>
+    <div class="sr-players">
+      <div class="sr-player">
+        <div class="sr-avatar sr-av-white">⬜</div>
+        <div class="sr-pname" id="srn-white">Speler 1</div>
+        <canvas id="sr-cv-white" width="90" height="90" class="sr-die-canvas"></canvas>
+        <button id="sr-btn-white" class="sr-btn sr-btn-white" onclick="doStartRoll('white')">Gooi!</button>
+      </div>
+      <div class="sr-vs">VS</div>
+      <div class="sr-player">
+        <div class="sr-avatar sr-av-red">🟥</div>
+        <div class="sr-pname" id="srn-black">Speler 2</div>
+        <canvas id="sr-cv-black" width="90" height="90" class="sr-die-canvas"></canvas>
+        <button id="sr-btn-black" class="sr-btn sr-btn-red" onclick="doStartRoll('black')">Gooi!</button>
       </div>
     </div>
     <div class="sr-result" id="sr-result"></div>
   </div>
 </div>
 
-<!-- GAME -->
-<div id="screen-game" class="screen">
-  <div id="game-header">
-    <button class="back-btn" onclick="confirmLeave()">&#8592;</button>
-    <div id="header-info">
-      <span id="header-turn"></span>
-      <span id="header-phase" class="phase-badge"></span>
+<!-- ══════════ GAME ══════════ -->
+<div id="s-game" class="screen">
+
+  <!-- Left sidebar: black player + dice -->
+  <div id="sidebar-left" class="sidebar">
+    <div class="sb-player sb-player-top" id="sb-black">
+      <div class="sb-avatar sb-av-red">🟥</div>
+      <div class="sb-info">
+        <div class="sb-name" id="sb-name-black">Speler 2</div>
+        <div class="sb-phase" id="sb-phase-black">—</div>
+      </div>
+      <div class="sb-score">
+        <div class="sb-score-num" id="sb-score-black">0</div>
+        <div class="sb-score-label">uit</div>
+      </div>
+      <div class="sb-turn-dot" id="dot-black"></div>
     </div>
-    <div id="header-score">
-      <span id="score-white">W: 0</span>
-      <span id="score-black">R: 0</span>
+
+    <div class="sb-bearoff" id="bearoff-black">
+      <div class="sb-bearoff-label">Geslagen</div>
+      <div class="bar-pieces" id="bar-black"></div>
+      <div class="sb-bearoff-label" style="margin-top:8px">Gewonnen</div>
+      <div class="borne-pieces" id="borne-black"></div>
+    </div>
+
+    <div class="sb-dice-section">
+      <div class="sb-dice-label">Dobbelstenen</div>
+      <div class="sb-dice" id="dice-display"></div>
+      <div class="sb-dice-note" id="dice-note"></div>
     </div>
   </div>
 
-  <div id="game-main">
-    <!-- Board -->
-    <div id="board-wrap">
-      <div id="winner-overlay" class="hidden">
-        <div class="winner-box">
-          <div class="winner-trophy">🏆</div>
-          <h2 id="winner-text"></h2>
-          <button onclick="goLobby()">Menu</button>
-          <button onclick="restartGame()">Nog een keer</button>
-        </div>
+  <!-- Board -->
+  <div id="board-area">
+    <div id="board-winner" class="hidden">
+      <div class="bw-card">
+        <div class="bw-trophy">🏆</div>
+        <div class="bw-title" id="bw-title">Winnaar!</div>
+        <button onclick="goLobby()">☰ Menu</button>
+        <button class="bw-play" onclick="restartGame()">▶ Opnieuw</button>
       </div>
-      <div id="board">
-        <div class="half-row" id="top-row"></div>
-        <div id="mid-row">
-          <div id="mid-label-left"></div>
-          <div class="bar" id="bar-area"></div>
-          <div id="mid-label-right"></div>
-        </div>
-        <div class="half-row" id="bot-row"></div>
-      </div>
-      <div id="ai-thinking" class="hidden">AI denkt…</div>
     </div>
 
-    <!-- Side tray -->
-    <div id="side-tray">
-      <!-- Dice -->
-      <div class="tray-section" id="tray-dice">
-        <div class="tray-label">Dobbelstenen</div>
-        <div id="dice-visual-area"></div>
-        <div id="dice-note"></div>
-      </div>
-      <!-- White stones -->
-      <div class="tray-section" id="tray-white">
-        <div class="tray-player-row">
-          <div class="tray-stone-preview stone-white"></div>
-          <div class="tray-label tray-label-white">Speler 1 · Wit</div>
+    <!-- point labels -->
+    <div class="pt-labels pt-labels-top" id="pt-top"></div>
+    <div id="board">
+      <!-- Top 12 points: 13..24 left to right = indices 12..23 -->
+      <div class="board-row board-row-top" id="brow-top"></div>
+      <!-- Middle bar -->
+      <div class="board-mid">
+        <div class="board-mid-half"></div>
+        <div class="board-midbar" id="midbar">
+          <div class="midbar-pieces" id="bar-mid"></div>
         </div>
-        <div class="stones-grid" id="stones-white"></div>
-        <div class="tray-borne">Uit: <span id="borne-white-count">0</span>/15</div>
+        <div class="board-mid-half"></div>
       </div>
-      <!-- Red stones -->
-      <div class="tray-section" id="tray-red">
-        <div class="tray-player-row">
-          <div class="tray-stone-preview stone-red"></div>
-          <div class="tray-label tray-label-red">Speler 2 · Rood</div>
-        </div>
-        <div class="stones-grid" id="stones-black"></div>
-        <div class="tray-borne">Uit: <span id="borne-black-count">0</span>/15</div>
+      <!-- Bottom 12 points: 12..1 left to right = indices 11..0 -->
+      <div class="board-row board-row-bot" id="brow-bot"></div>
+    </div>
+    <div class="pt-labels pt-labels-bot" id="pt-bot"></div>
+  </div>
+
+  <!-- Right sidebar: white player + actions -->
+  <div id="sidebar-right" class="sidebar">
+    <div class="sb-player sb-player-top" id="sb-white">
+      <div class="sb-turn-dot" id="dot-white"></div>
+      <div class="sb-score">
+        <div class="sb-score-num" id="sb-score-white">0</div>
+        <div class="sb-score-label">uit</div>
       </div>
+      <div class="sb-info sb-info-right">
+        <div class="sb-name" id="sb-name-white">Speler 1</div>
+        <div class="sb-phase" id="sb-phase-white">—</div>
+      </div>
+      <div class="sb-avatar sb-av-white">⬜</div>
+    </div>
+
+    <div class="sb-bearoff" id="bearoff-white">
+      <div class="sb-bearoff-label">Geslagen</div>
+      <div class="bar-pieces" id="bar-white"></div>
+      <div class="sb-bearoff-label" style="margin-top:8px">Gewonnen</div>
+      <div class="borne-pieces" id="borne-white"></div>
+    </div>
+
+    <div class="sb-actions">
+      <div class="msg-box" id="msg-box"></div>
+      <button id="btn-roll" class="action-btn btn-roll" onclick="rollDice()" disabled>🎲 Gooi</button>
+      <button id="btn-pass" class="action-btn btn-pass" onclick="passTurn()" disabled>⏭ Pas beurt</button>
+      <button class="action-btn btn-menu" onclick="confirmLeave()">☰ Menu</button>
+      <div id="ai-thinking" class="hidden ai-think">🤖 AI denkt…</div>
     </div>
   </div>
 
-  <div id="game-footer">
-    <div id="msg-area"></div>
-    <div id="btn-panel">
-      <button id="btn-roll" onclick="rollDice()">🎲 Gooi dobbelstenen</button>
-      <button id="btn-pass" onclick="passTurn()" disabled>Pas beurt</button>
-    </div>
-  </div>
-</div>
+</div><!-- /s-game -->
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -178,6 +450,6 @@
 <script src="js/game.js"></script>
 <script src="js/multiplayer.js"></script>
 <script src="js/ui.js"></script>
-<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
+<script>if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');</script>
 </body>
 </html>

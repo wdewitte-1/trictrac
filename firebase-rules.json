@@ -4,7 +4,7 @@
       "$roomId": {
         ".read": true,
         ".write": true,
-        ".validate": "newData.hasChildren(['host', 'status'])"
+        ".validate": "newData.hasChildren(['host','status'])"
       }
     }
   }
