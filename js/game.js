@@ -7,10 +7,11 @@ let G = {
   turn: 'white',
   dice: [],
   selected: null,
+  traySelected: null,  // color of stone picked from tray
   rolled: false,
-  mode: null,       // 'local' | 'ai' | 'online'
+  mode: null,          // 'local' | 'ai' | 'online'
   difficulty: 'medium',
-  myColor: null,    // for online: 'white' or 'black'
+  myColor: null,       // for online: 'white' or 'black'
   startRolls: { white: null, black: null },
   startPhase: true,
 };
@@ -22,6 +23,7 @@ function initGame(mode, color) {
   G.turn = 'white';
   G.dice = [];
   G.selected = null;
+  G.traySelected = null;
   G.rolled = false;
   G.mode = mode;
   G.myColor = color || null;
@@ -143,8 +145,9 @@ function aiPlayTurn() {
     G.rolled = true;
     const isTT = Math.min(d1,d2)===1&&Math.max(d1,d2)===2, isDbl = d1===d2;
     setDiceNote(d1, d2, isTT, isDbl);
-    renderDice();
-    setTimeout(() => aiExecuteMoves(), 500);
+    // Animate roll then render final values
+    animateDiceRoll(G.dice, 'black');
+    setTimeout(() => { renderDice(); setTimeout(() => aiExecuteMoves(), 400); }, 420);
   }, 700);
 }
 
@@ -195,6 +198,7 @@ function scoreMove(move, color) {
 
 function endTurnLogic() {
   G.selected = null;
+  G.traySelected = null;
   if (G.borne[G.turn] >= 15) { showWinner(G.turn); return; }
   const allUsed = G.dice.every(d => d.used);
   const reroll = allUsed && (G.dice.length === 4 || G.dice.length === 8);
