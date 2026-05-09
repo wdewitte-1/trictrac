@@ -3,13 +3,14 @@
 // See SETUP-GUIDE.md Step 2 for instructions
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyC1yxA7MHWPPEd-6W6eLv7sjorI4EiG6XU",
+  authDomain: "trictrac-83142.firebaseapp.com",
+  databaseURL: "https://trictrac-83142-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "trictrac-83142",
+  storageBucket: "trictrac-83142.firebasestorage.app",
+  messagingSenderId: "1057759161292",
+  appId: "1:1057759161292:web:cfe36e139985e4cb774b69",
+  measurementId: "G-P259G8QMPM"
 };
 
 firebase.initializeApp(firebaseConfig);
