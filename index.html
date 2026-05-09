@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a3a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TricTrac">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>TricTrac</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- LOBBY -->
+<div id="screen-lobby" class="screen active">
+  <div class="lobby-inner">
+    <div class="logo">
+      <div class="logo-icon">&#9822;</div>
+      <h1>TricTrac</h1>
+      <p class="tagline">De Nederlandse variant van Backgammon</p>
+    </div>
+    <div class="mode-grid">
+      <button class="mode-btn" onclick="startLocal()">
+        <span class="mode-icon">&#9825;</span>
+        <span class="mode-title">2 spelers</span>
+        <span class="mode-sub">Op dit apparaat</span>
+      </button>
+      <button class="mode-btn" onclick="showAiSetup()">
+        <span class="mode-icon">&#9812;</span>
+        <span class="mode-title">Tegen AI</span>
+        <span class="mode-sub">Speel alleen</span>
+      </button>
+      <button class="mode-btn" onclick="showCreateRoom()">
+        <span class="mode-icon">&#9993;</span>
+        <span class="mode-title">Spel aanmaken</span>
+        <span class="mode-sub">Online multiplayer</span>
+      </button>
+      <button class="mode-btn" onclick="showJoinRoom()">
+        <span class="mode-icon">&#128279;</span>
+        <span class="mode-title">Spel joinen</span>
+        <span class="mode-sub">Voer code in</span>
+      </button>
+    </div>
+
+    <!-- AI difficulty -->
+    <div id="ai-setup" class="panel hidden">
+      <p class="panel-label">Moeilijkheidsgraad</p>
+      <div class="diff-row">
+        <button class="diff-btn active" data-diff="easy" onclick="setDiff(this)">Makkelijk</button>
+        <button class="diff-btn" data-diff="medium" onclick="setDiff(this)">Gemiddeld</button>
+        <button class="diff-btn" data-diff="hard" onclick="setDiff(this)">Moeilijk</button>
+      </div>
+      <button class="primary-btn" onclick="startAi()">Spelen</button>
+    </div>
+
+    <!-- Create room -->
+    <div id="create-room" class="panel hidden">
+      <p class="panel-label">Jouw spelcode</p>
+      <div class="room-code-display" id="room-code-display">—</div>
+      <p class="panel-sub" id="create-status">Code wordt aangemaakt...</p>
+      <button class="primary-btn" id="btn-share-code" onclick="shareCode()" style="display:none">Deel code</button>
+      <p class="panel-sub waiting-text" id="waiting-text" style="display:none">Wachten op tweede speler...</p>
+    </div>
+
+    <!-- Join room -->
+    <div id="join-room" class="panel hidden">
+      <p class="panel-label">Voer spelcode in</p>
+      <input type="text" id="join-input" maxlength="6" placeholder="bv. AB12CD" autocomplete="off" autocapitalize="characters">
+      <button class="primary-btn" onclick="joinRoom()">Joinen</button>
+      <p class="panel-sub error-text" id="join-error"></p>
+    </div>
+  </div>
+</div>
+
+<!-- STARTING ROLL -->
+<div id="screen-startroll" class="screen">
+  <div class="startroll-inner">
+    <h2>Wie begint?</h2>
+    <p class="sr-sub">Beide spelers gooien één dobbelsteen. De hoogste gooi mag beginnen.</p>
+    <div class="start-players">
+      <div class="start-player" id="sp-white">
+        <div class="sp-label">Wit</div>
+        <div class="sp-die" id="sp-die-white">?</div>
+        <button class="roll-btn" id="btn-roll-white" onclick="doStartRoll('white')">Gooi</button>
+      </div>
+      <div class="start-vs">vs</div>
+      <div class="start-player" id="sp-black">
+        <div class="sp-label">Zwart</div>
+        <div class="sp-die" id="sp-die-black">?</div>
+        <button class="roll-btn" id="btn-roll-black" onclick="doStartRoll('black')">Gooi</button>
+      </div>
+    </div>
+    <div class="sr-result" id="sr-result"></div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="screen-game" class="screen">
+  <div id="game-header">
+    <button class="back-btn" onclick="confirmLeave()">&#8592;</button>
+    <div id="header-info">
+      <span id="header-turn"></span>
+      <span id="header-phase" class="phase-badge"></span>
+    </div>
+    <div id="header-score">
+      <span id="score-white">W: 0</span>
+      <span id="score-black">Z: 0</span>
+    </div>
+  </div>
+
+  <div id="board-wrap">
+    <div id="winner-overlay" class="hidden">
+      <div class="winner-box">
+        <div class="winner-trophy">&#127942;</div>
+        <h2 id="winner-text"></h2>
+        <button onclick="goLobby()">Menu</button>
+        <button onclick="restartGame()">Nog een keer</button>
+      </div>
+    </div>
+
+    <div id="board">
+      <div class="half-row" id="top-row"></div>
+      <div id="mid-row">
+        <div id="mid-label-left"></div>
+        <div class="bar" id="bar-area"></div>
+        <div id="mid-label-right"></div>
+      </div>
+      <div class="half-row" id="bot-row"></div>
+    </div>
+    <div id="ai-thinking" class="hidden">AI denkt...</div>
+  </div>
+
+  <div id="game-footer">
+    <div id="dice-panel">
+      <div id="dice-area"></div>
+      <div id="dice-note"></div>
+    </div>
+    <div id="action-panel">
+      <div id="msg-area"></div>
+      <div id="btn-panel">
+        <button id="btn-roll" onclick="rollDice()">Gooi dobbelstenen</button>
+        <button id="btn-pass" onclick="passTurn()" disabled>Pas beurt</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/game.js"></script>
+<script src="js/multiplayer.js"></script>
+<script src="js/ui.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+</body>
+</html>
